@@ -79,6 +79,8 @@ def main(opts):
                     optimizer.step()
 
                     batch_loss = 0
+                    batch_loss_kl = 0
+                    batch_loss_rec = 0
                     #
                     optimizer.zero_grad()
             model.eval()
