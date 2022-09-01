@@ -1,7 +1,5 @@
 import argparse
 import os
-if os.name == 'nt': # only for windows
-    from ctypes.wintypes import LONG
 import datetime
 import time
 
