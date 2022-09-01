@@ -90,8 +90,8 @@ def main(opts):
     #print('On average, an epoch takes {}.'.format(datetime.timedelta(
     #    seconds=(t3-t2) / opts['nepochs'])))
 
-    del model.g
-    torch.save(model, './model.pth')
+    #del model.g
+    torch.save(model, opts['log_dir']+'/model.pth')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test')
