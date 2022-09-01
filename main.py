@@ -43,16 +43,15 @@ def main(opts):
     t2 = time.time()
 
     # Training
-    
-    for epoch in range(opts['nepochs']):
-        model.train()
-        batch_count = 0
-        batch_loss = 0
-        batch_loss_rec = 0
-        batch_loss_kl = 0
-        optimizer.zero_grad()
+    with tqdm(total=len(data_loader)*opts['nepochs'], position=0, leave=False) as pbar:
+        for epoch in range(opts['nepochs']):
+            model.train()
+            batch_count = 0
+            batch_loss = 0
+            batch_loss_rec = 0
+            batch_loss_kl = 0
+            optimizer.zero_grad()
 
-        with tqdm(total=len(data_loader), position=0, leave=False) as pbar:
             for data in tqdm(data_loader, position=0, leave=False):
                 pbar.update()
 
@@ -135,7 +134,7 @@ if __name__ == '__main__':
     parser.add_argument('--clip-bound', type=float, default=0.25,
                         help='constraint of gradient norm for gradient clipping')
     parser.add_argument('--reg', type=float, default=1, help='regularization for KL loss')
-    parser.add_argument('--nepochs', type=int, default=1, help='number of epochs for training')
+    parser.add_argument('--nepochs', type=int, default=3, help='number of epochs for training')
     args = parser.parse_args()
     
     from decoder.utils import setup
