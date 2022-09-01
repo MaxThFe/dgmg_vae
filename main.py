@@ -48,21 +48,27 @@ def main(opts):
         model.train()
         batch_count = 0
         batch_loss = 0
+        batch_loss_rec = 0
+        batch_loss_kl = 0
         optimizer.zero_grad()
 
-        for i, data in enumerate(tqdm(data_loader)):
+        for i, data in enumerate(tqdm(data_loader, position=0, leave=True)):
             x, edge_index = convert_cycle(data)
-            loss = model(x, edge_index, actions=data) # train on data
+            loss, loss_rec, loss_kl = model(x, edge_index, actions=data) # train on data
             loss.backward() # backpropagate
 
             batch_loss += loss.item()
+            batch_loss_rec += -loss_rec.item()
+            batch_loss_kl += loss_kl.item()
             #batch_prob += prob_averaged.item()
             batch_count += 1
- 
+
             if batch_count % opts['batch_size'] == 0:
-                
-                printer.update(epoch + 1, {'averaged_loss': batch_loss/opts['batch_size']})
                 print('\n')
+                printer.update(epoch + 1, {'averaged_loss': batch_loss/opts['batch_size'], \
+                    'reconstruction_loss': batch_loss_rec/opts['batch_size'], \
+                    'kl_loss': batch_loss_kl/opts['batch_size'],})
+                
 
                 if opts['clip_grad']:
                     clip_grad_norm_(model.parameters(), opts['clip_bound'])
@@ -125,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument('--clip-bound', type=float, default=0.25,
                         help='constraint of gradient norm for gradient clipping')
     parser.add_argument('--reg', type=float, default=1, help='regularization for KL loss')
-    parser.add_argument('--nepochs', type=int, default=0, help='number of epochs for training')
+    parser.add_argument('--nepochs', type=int, default=1, help='number of epochs for training')
     args = parser.parse_args()
     
     from decoder.utils import setup

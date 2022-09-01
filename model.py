@@ -49,7 +49,7 @@ class DGMG_VAE(VGAE):
         loss_rec = self.decoder.forward(actions = actions, latent_z=z) # reconstrution loss
         loss_kl = self.kl_loss() # Kubler-Leibler loss
         #print(loss_rec, loss_kl)
-        return - loss_rec + self.reg*loss_kl 
+        return - loss_rec + self.reg*loss_kl, loss_rec, loss_kl 
 
     def test_generation(self):
         z = torch.normal(torch.zeros(self.out_dim),torch.ones(self.out_dim)).view(1,-1)
