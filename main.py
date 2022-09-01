@@ -2,6 +2,7 @@ import argparse
 import os
 import datetime
 import time
+import tqdm
 
 import torch
 from torch.optim import Adam
@@ -42,13 +43,14 @@ def main(opts):
     t2 = time.time()
 
     # Training
-    model.train()
+    
     for epoch in range(opts['nepochs']):
+        model.train()
         batch_count = 0
         batch_loss = 0
         optimizer.zero_grad()
 
-        for i, data in enumerate(data_loader):
+        for i, data in enumerate(tqdm(data_loader)):
             x, edge_index = convert_cycle(data)
             loss = model(x, edge_index, actions=data) # train on data
             loss.backward() # backpropagate
@@ -68,6 +70,8 @@ def main(opts):
                 batch_loss = 0
                 #
                 optimizer.zero_grad()
+        model.eval()
+        evaluator.rollout_and_examine(model, opts['num_generated_samples'])
 
     t3 = time.time()
 

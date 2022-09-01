@@ -171,7 +171,12 @@ class CycleModelEvaluation(object):
         self.valid_size_ratio = num_valid_size / num_samples
         self.cycle_ratio = num_cycle / num_samples
         self.valid_ratio = num_valid / num_samples
-
+        print("-"*25)
+        print("Valid size ratio", self.valid_size_ratio)
+        print("Cycle ratio", self.cycle_ratio)
+        print('Valdi ratio', self.valid_ratio)
+        print("-"*25)
+        
     def write_summary(self):
 
         def _format_value(v):
