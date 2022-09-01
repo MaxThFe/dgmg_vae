@@ -2,7 +2,7 @@ import argparse
 import os
 import datetime
 import time
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 import torch
 from torch.optim import Adam
@@ -52,34 +52,38 @@ def main(opts):
         batch_loss_kl = 0
         optimizer.zero_grad()
 
-        for i, data in enumerate(tqdm(data_loader, position=0, leave=True)):
-            x, edge_index = convert_cycle(data)
-            loss, loss_rec, loss_kl = model(x, edge_index, actions=data) # train on data
-            loss.backward() # backpropagate
+        with tqdm(total=len(data_loader), position=0, leave=False) as pbar:
+            for data in tqdm(data_loader, position=0, leave=False):
+                pbar.update()
 
-            batch_loss += loss.item()
-            batch_loss_rec += -loss_rec.item()
-            batch_loss_kl += loss_kl.item()
-            #batch_prob += prob_averaged.item()
-            batch_count += 1
+            #for i, data in enumerate(tqdm(data_loader, position=0, leave=True)):
+                x, edge_index = convert_cycle(data)
+                loss, loss_rec, loss_kl = model(x, edge_index, actions=data) # train on data
+                loss.backward() # backpropagate
 
-            if batch_count % opts['batch_size'] == 0:
-                print('\n')
-                printer.update(epoch + 1, {'averaged_loss': batch_loss/opts['batch_size'], \
-                    'reconstruction_loss': batch_loss_rec/opts['batch_size'], \
-                    'kl_loss': batch_loss_kl/opts['batch_size'],})
-                
+                batch_loss += loss.item()
+                batch_loss_rec += -loss_rec.item()
+                batch_loss_kl += loss_kl.item()
+                #batch_prob += prob_averaged.item()
+                batch_count += 1
 
-                if opts['clip_grad']:
-                    clip_grad_norm_(model.parameters(), opts['clip_bound'])
+                if batch_count % opts['batch_size'] == 0:
+                    #print('\n')
+                    printer.update(epoch + 1, {'averaged_loss': batch_loss/opts['batch_size'], \
+                        'reconstruction_loss': batch_loss_rec/opts['batch_size'], \
+                        'kl_loss': batch_loss_kl/opts['batch_size'],},pbar)
+                    
 
-                optimizer.step()
+                    if opts['clip_grad']:
+                        clip_grad_norm_(model.parameters(), opts['clip_bound'])
 
-                batch_loss = 0
-                #
-                optimizer.zero_grad()
-        model.eval()
-        evaluator.rollout_and_examine(model, opts['num_generated_samples'])
+                    optimizer.step()
+
+                    batch_loss = 0
+                    #
+                    optimizer.zero_grad()
+            model.eval()
+            evaluator.rollout_and_examine(model, opts['num_generated_samples'])
 
     t3 = time.time()
 

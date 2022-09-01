@@ -5,6 +5,7 @@ import pickle
 import random
 from torch.utils.data import Dataset
 from decoder.utils import convert_cycle
+from tqdm import tqdm
 
 def get_previous(i, v_max):
     if i == 0:
@@ -176,7 +177,7 @@ class CycleModelEvaluation(object):
         print("Cycle ratio", self.cycle_ratio)
         print('Valdi ratio', self.valid_ratio)
         print("-"*25)
-        
+
     def write_summary(self):
 
         def _format_value(v):
@@ -215,11 +216,11 @@ class CyclePrinting(object):
         self.num_batches = num_batches
         self.batch_count = 0
 
-    def update(self, epoch, metrics):
+    def update(self, epoch, metrics, pbar):
         self.batch_count = (self.batch_count) % self.num_batches + 1
 
         msg = 'epoch {:d}/{:d}, batch {:d}/{:d}'.format(epoch, self.num_epochs,
                                                         self.batch_count, self.num_batches)
         for key, value in metrics.items():
             msg += ', {}: {:4f}'.format(key, value)
-        print(msg)
+        pbar.write(msg)
