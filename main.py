@@ -119,7 +119,7 @@ if __name__ == '__main__':
     parser.add_argument('--clip-bound', type=float, default=0.25,
                         help='constraint of gradient norm for gradient clipping')
     parser.add_argument('--reg', type=float, default=1, help='regularization for KL loss')
-    parser.add_argument('--nepochs', type=float, default=5, help='number of epochs for training')
+    parser.add_argument('--nepochs', type=int, default=5, help='number of epochs for training')
     args = parser.parse_args()
     
     from decoder.utils import setup
