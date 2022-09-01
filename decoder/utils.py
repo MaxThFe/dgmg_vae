@@ -64,7 +64,9 @@ def setup(args):
 
     # Dataset
     from decoder.configure import dataset_based_configure
+    nepochs = opts['nepochs']
     opts = dataset_based_configure(opts)
+    opts['nepochs'] = nepochs
 
     assert opts['path_to_dataset'] is not None, 'Expect path to dataset to be set.'
     if not os.path.exists(opts['path_to_dataset']):
