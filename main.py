@@ -2,7 +2,7 @@ import argparse
 import os
 import datetime
 import time
-import tqdm
+from tqdm import tqdm
 
 import torch
 from torch.optim import Adam
@@ -60,6 +60,7 @@ def main(opts):
             batch_count += 1
  
             if batch_count % opts['batch_size'] == 0:
+                print('\n')
                 printer.update(epoch + 1, {'averaged_loss': batch_loss/opts['batch_size']})
 
                 if opts['clip_grad']:
