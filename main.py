@@ -60,8 +60,9 @@ def main(opts):
             batch_count += 1
  
             if batch_count % opts['batch_size'] == 0:
-                print('\n')
+                
                 printer.update(epoch + 1, {'averaged_loss': batch_loss/opts['batch_size']})
+                print('\n')
 
                 if opts['clip_grad']:
                     clip_grad_norm_(model.parameters(), opts['clip_bound'])
@@ -124,7 +125,7 @@ if __name__ == '__main__':
     parser.add_argument('--clip-bound', type=float, default=0.25,
                         help='constraint of gradient norm for gradient clipping')
     parser.add_argument('--reg', type=float, default=1, help='regularization for KL loss')
-    parser.add_argument('--nepochs', type=int, default=5, help='number of epochs for training')
+    parser.add_argument('--nepochs', type=int, default=0, help='number of epochs for training')
     args = parser.parse_args()
     
     from decoder.utils import setup
